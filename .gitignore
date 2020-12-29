@@ -1,0 +1,6 @@
+/.idea/
+/dist/
+/build/
+/nacos_client_python.egg-info/
+__pycache__/
+/.vscode/
