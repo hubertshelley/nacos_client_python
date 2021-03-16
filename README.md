@@ -21,6 +21,51 @@ python setup.py install
 
 请参照client_test运行
 
+或参照
+```python
+import threading
+import time
+
+import uvicorn
+from nacos import NacosClient
+
+
+def regis_server_to_nacos(service_ip, port, service_name, namespaceId):
+    """
+    注册服务到nacos
+    """
+    nacos_client = NacosClient('hostname')
+    # 注册服务
+    try:
+        response = nacos_client.instance().register(ip=service_ip, port=port, serviceName=service_name,
+                                                    namespaceId=namespaceId, ephemeral=True)
+        print('register', response)
+    except Exception as e:
+        print(e.__str__())
+    # 自动心跳包
+    try:
+        response = nacos_client.instance().auto_beat(ip=service_ip, port=port, serviceName=service_name,
+                                                     namespaceId=namespaceId)
+        print('send_beat', response)
+    except Exception as e:
+        print(e.__str__())
+
+
+if __name__ == '__main__':
+    # 运行服务器地址
+    service_ip = '192.168.111.89'
+    # 运行服务名称
+    service_name = 'service.test'
+    # 命名空间ID
+    namespaceId = 'd479f2e8-62af-47a0-af66-70be48f15080'
+    # 运行服务器运行端口
+    port = 9014
+    regis_server_to_nacos(service_ip, port, service_name, namespaceId)
+    # uvicorn运行django程序
+    uvicorn.run("hikvim_oa.asgi:application", host="0.0.0.0", port=port, log_level="info", reload=True)
+
+```
+
 #### 参与贡献
 
 1.  Fork 本仓库
